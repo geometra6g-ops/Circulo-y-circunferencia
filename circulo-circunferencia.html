@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Círculo y Circunferencia — Maximática</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a1a30;
+    --bg-plate:#0d2140;
+    --bg-plate-2:#0f2647;
+    --grid:rgba(133,178,214,.09);
+    --grid-strong:rgba(133,178,214,.16);
+    --ink:#eef4f9;
+    --ink-dim:#93aec6;
+    --ink-faint:#5c7692;
+    --coral:#ff6b4a;
+    --coral-dim:rgba(255,107,74,.18);
+    --cyan:#49c7ff;
+    --cyan-dim:rgba(73,199,255,.16);
+    --amber:#ffb627;
+    --amber-dim:rgba(255,182,39,.16);
+    --line:#3a597c;
+    --line-soft:#2a486a;
+    --mono:'IBM Plex Mono',monospace;
+    --display:'Space Grotesk',sans-serif;
+    --body:'Inter',sans-serif;
+    --radius-card:14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--body);
+    line-height:1.55;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+      linear-gradient(var(--grid-strong) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-strong) 1px, transparent 1px);
+    background-size:20px 20px, 20px 20px, 100px 100px, 100px 100px;
+    background-position:-1px -1px;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 100px;}
+  header.top{
+    max-width:960px;margin:0 auto;padding:26px 20px 10px;
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--ink-faint);
+  }
+  header.top b{color:var(--amber);font-weight:600;}
+  .plate{
+    background:linear-gradient(180deg,var(--bg-plate),var(--bg-plate-2));
+    border:1px solid var(--line-soft);
+    border-radius:18px;
+    padding:34px 30px 38px;
+    margin-top:26px;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 20px 50px -25px rgba(0,0,0,.6);
+  }
+  .plate::before{
+    content:'';
+    position:absolute;top:0;left:0;right:0;height:1px;
+    background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+    opacity:.35;
+  }
+  .eyebrow{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;
+    color:var(--amber);text-transform:uppercase;margin:0 0 10px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::after{content:'';flex:1;height:1px;background:var(--line);}
+  h1,h2,h3{font-family:var(--display);font-weight:700;margin:0 0 12px;letter-spacing:-.01em;}
+  h1{font-size:clamp(32px,5.4vw,52px);line-height:1.04;}
+  h2{font-size:clamp(22px,3.4vw,30px);}
+  h3{font-size:17px;color:var(--ink);font-weight:600;}
+  p{color:var(--ink-dim);margin:0 0 14px;font-size:15.5px;}
+  p.lead{font-size:17px;color:var(--ink);}
+  strong{color:var(--ink);font-weight:600;}
+  .tag-coral{color:var(--coral);}
+  .tag-cyan{color:var(--cyan);}
+  .tag-amber{color:var(--amber);}
+  code, .mono{font-family:var(--mono);}
+
+  /* HERO */
+  .hero-top{display:flex;flex-wrap:wrap;gap:34px;align-items:center;}
+  .hero-text{flex:1 1 300px;min-width:260px;}
+  .hero-diagram{flex:0 0 280px;width:280px;}
+  .compass-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);
+    border:1px solid var(--line);padding:5px 12px;border-radius:100px;margin-bottom:18px;
+  }
+  .compass-badge span{width:6px;height:6px;border-radius:50%;background:var(--amber);display:inline-block;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+  .toggle-row{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 6px;}
+  .btn{
+    font-family:var(--mono);font-size:13px;letter-spacing:.03em;
+    border:1px solid var(--line);background:transparent;color:var(--ink-dim);
+    padding:11px 18px;border-radius:10px;cursor:pointer;
+    transition:border-color .2s, color .2s, background .2s, transform .15s;
+  }
+  .btn:hover{border-color:var(--ink-faint);color:var(--ink);}
+  .btn:active{transform:scale(.97);}
+  .btn.active-coral{border-color:var(--coral);color:var(--coral);background:var(--coral-dim);}
+  .btn.active-cyan{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-dim);}
+  .btn.primary{border-color:var(--amber);color:var(--amber);}
+  .btn.primary:hover{background:var(--amber-dim);}
+  .btn:disabled{opacity:.4;cursor:default;}
+  .btn:focus-visible, input:focus-visible, .clickzone:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}
+
+  .explainer{
+    font-size:14px;color:var(--ink-dim);border-left:2px solid var(--line);
+    padding-left:14px;margin-top:16px;min-height:44px;
+  }
+  .explainer b{color:inherit;}
+
+  svg{display:block;width:100%;height:auto;}
+  .diagram-box{background:rgba(0,0,0,.15);border:1px solid var(--line-soft);border-radius:12px;padding:10px;}
+
+  /* GRID sections */
+  .cols{display:flex;gap:30px;flex-wrap:wrap;align-items:flex-start;}
+  .col-diagram{flex:1 1 320px;min-width:280px;}
+  .col-text{flex:1 1 280px;min-width:260px;}
+
+  .controls{margin-top:16px;display:flex;flex-direction:column;gap:12px;}
+  .slider-row{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:12.5px;color:var(--ink-faint);}
+  input[type=range]{
+    flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:4px;
+    background:var(--line);outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+    background:var(--amber);cursor:pointer;border:2px solid var(--bg);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px;height:16px;border-radius:50%;background:var(--amber);cursor:pointer;border:2px solid var(--bg);
+  }
+  .readout{font-family:var(--mono);font-size:14px;color:var(--amber);white-space:nowrap;min-width:52px;text-align:right;}
+
+  .stat-strip{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+  .stat{
+    background:rgba(0,0,0,.2);border:1px solid var(--line-soft);border-radius:10px;
+    padding:10px 14px;flex:1 1 120px;
+  }
+  .stat .k{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.08em;}
+  .stat .v{font-family:var(--mono);font-size:19px;color:var(--ink);margin-top:2px;}
+  .stat .v.hl{color:var(--amber);}
+
+  .pi-reveal{
+    margin-top:18px;padding:18px 20px;border-radius:12px;
+    border:1px solid var(--amber-dim);background:linear-gradient(135deg,rgba(255,182,39,.08),transparent);
+    display:none;
+  }
+  .pi-reveal.show{display:block;animation:reveal .5s ease both;}
+  @keyframes reveal{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .pi-reveal .pisym{font-family:var(--display);font-size:34px;color:var(--amber);margin-right:10px;}
+
+  .quiz{margin-top:20px;padding:18px;border:1px dashed var(--line);border-radius:12px;background:rgba(0,0,0,.15);}
+  .quiz .q{font-size:14px;color:var(--ink);margin-bottom:10px;font-weight:600;}
+  .feedback{font-family:var(--mono);font-size:13px;margin-top:10px;min-height:18px;}
+  .feedback.ok{color:#5fe3a1;}
+  .feedback.no{color:var(--coral);}
+  .clickzone{cursor:pointer;}
+
+  .formula-cards{display:flex;gap:16px;flex-wrap:wrap;margin-top:20px;}
+  .fcard{
+    flex:1 1 220px;background:rgba(0,0,0,.2);border:1px solid var(--line-soft);
+    border-radius:12px;padding:20px;
+  }
+  .fcard .lbl{font-family:var(--mono);font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+  .fcard .f{font-family:var(--display);font-size:26px;color:var(--ink);}
+  .fcard .f .op{color:var(--amber);}
+  .fcard p{margin-top:10px;font-size:13px;}
+
+  .pi-digits{font-family:var(--mono);font-size:13px;color:var(--ink-dim);word-break:break-all;line-height:1.9;margin-top:8px;}
+  .pi-digits .whole{color:var(--amber);}
+
+  .problem{
+    background:rgba(0,0,0,.18);border:1px solid var(--line-soft);border-radius:12px;
+    padding:18px 20px;margin-top:14px;
+  }
+  .problem h4{font-family:var(--display);font-size:15px;margin:0 0 8px;color:var(--cyan);}
+  .problem .sol{display:none;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-family:var(--mono);font-size:13.5px;color:var(--ink);}
+  .problem .sol.show{display:block;}
+  .problem .toggle-sol{margin-top:10px;}
+
+  footer{
+    max-width:960px;margin:40px auto 0;padding:20px;
+    font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);
+    text-align:center;
+  }
+
+  @media (max-width:640px){
+    .plate{padding:26px 18px 30px;}
+    .hero-diagram{width:100%;flex:1 1 100%;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001s !important; transition-duration:.001s !important;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div><b>MAXIMÁTICA</b> · Geometría 2º año</div>
+  <div>LÁMINA — CÍRCULO Y CIRCUNFERENCIA</div>
+</header>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="plate" id="plate-hero">
+    <div class="eyebrow">Lámina 01 · La distinción</div>
+    <div class="hero-top">
+      <div class="hero-text">
+        <div class="compass-badge"><span></span> trazado con compás</div>
+        <h1>Círculo y<br>Circunferencia</h1>
+        <p class="lead">No son lo mismo. Uno es una <span class="tag-coral">línea</span>. El otro es una <span class="tag-cyan">superficie</span>. Tocá los botones y comprobalo sobre la misma figura.</p>
+        <div class="toggle-row">
+          <button class="btn active-coral" id="btnCirc" data-mode="circunferencia">CIRCUNFERENCIA</button>
+          <button class="btn" id="btnCirculo" data-mode="circulo">CÍRCULO</button>
+        </div>
+        <div class="explainer" id="heroExplainer">
+          <b>Circunferencia:</b> el borde curvo. Es una línea: tiene longitud, pero no tiene área. Es el conjunto de puntos que están a igual distancia (el radio) del centro.
+        </div>
+      </div>
+      <div class="hero-diagram">
+        <div class="diagram-box">
+          <svg viewBox="0 0 400 400" id="heroSvg" role="img" aria-label="Círculo con toggle entre borde y superficie">
+            <circle cx="200" cy="200" r="150" fill="none" stroke="var(--line)" stroke-width="1" stroke-dasharray="2 6" opacity=".5"></circle>
+            <line id="heroCompassArm" x1="200" y1="200" x2="200" y2="50" stroke="var(--ink-faint)" stroke-width="1" opacity=".35"></line>
+            <circle id="heroFill" cx="200" cy="200" r="145" fill="var(--cyan)" fill-opacity="0"></circle>
+            <circle id="heroStroke" cx="200" cy="200" r="145" fill="none" stroke="var(--coral)" stroke-width="5" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0"></circle>
+            <circle cx="200" cy="200" r="3.5" fill="var(--ink)"></circle>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANATOMÍA + QUIZ -->
+  <section class="plate" id="plate-anatomy">
+    <div class="eyebrow">Lámina 02 · Anatomía y comprobación</div>
+    <h2>Las partes de la figura</h2>
+    <p>Arrastrá el punto sobre el borde para cambiar el tamaño. Los nombres y las medidas se actualizan solos.</p>
+    <div class="cols">
+      <div class="col-diagram">
+        <div class="diagram-box">
+          <svg viewBox="0 0 440 380" id="anatomySvg" role="img" aria-label="Diagrama de radio, diámetro, centro y circunferencia">
+            <circle id="anaFill" cx="180" cy="190" r="110" fill="var(--cyan)" fill-opacity=".12"></circle>
+            <circle id="anaStroke" cx="180" cy="190" r="110" fill="none" stroke="var(--coral)" stroke-width="3.5"></circle>
+            <line id="anaDiam" x1="70" y1="190" x2="290" y2="190" stroke="var(--ink-faint)" stroke-width="1.5" stroke-dasharray="4 4"></line>
+            <line id="anaRad" x1="180" y1="190" x2="290" y2="190" stroke="var(--amber)" stroke-width="2.5"></line>
+            <circle cx="180" cy="190" r="4" fill="var(--ink)"></circle>
+            <text x="180" y="176" text-anchor="middle" fill="var(--ink)" font-family="var(--mono)" font-size="11">O</text>
+            <text id="anaRadLabel" x="235" y="182" text-anchor="middle" fill="var(--amber)" font-family="var(--mono)" font-size="12">r</text>
+            <g id="anaHandle" style="cursor:grab;" tabindex="0" role="slider" aria-label="Arrastrar para cambiar el radio">
+              <circle cx="290" cy="190" r="11" fill="var(--bg-plate)" stroke="var(--amber)" stroke-width="2.5"></circle>
+            </g>
+            <text x="180" y="330" text-anchor="middle" fill="var(--ink-dim)" font-family="var(--mono)" font-size="12">circunferencia = borde &#160;&#8226;&#160; círculo = región sombreada</text>
+          </svg>
+        </div>
+      </div>
+      <div class="col-text">
+        <div class="stat-strip">
+          <div class="stat"><div class="k">Radio (r)</div><div class="v hl" id="statR">110 px</div></div>
+          <div class="stat"><div class="k">Diámetro (d = 2r)</div><div class="v hl" id="statD">220 px</div></div>
+          <div class="stat"><div class="k">Centro</div><div class="v">O</div></div>
+        </div>
+        <p style="margin-top:16px;"><span class="tag-coral">●</span> <strong>Circunferencia</strong>: la curva. Se mide en unidades de longitud (cm, m).<br>
+        <span class="tag-cyan">●</span> <strong>Círculo</strong>: la superficie interior + el borde. Se mide en unidades de área (cm², m²).</p>
+
+        <div class="quiz">
+          <div class="q">🎯 Comprobalo vos: hacé clic sobre la <span class="tag-coral">CIRCUNFERENCIA</span> (el borde) de esta figura.</div>
+          <svg viewBox="0 0 200 140" style="max-width:200px;">
+            <circle cx="100" cy="70" r="55" fill="var(--cyan)" fill-opacity=".1"></circle>
+            <circle id="quizTarget" class="clickzone" cx="100" cy="70" r="55" fill="none" stroke="var(--coral)" stroke-width="16" stroke-opacity="0" tabindex="0" role="button" aria-label="Zona de la circunferencia"></circle>
+            <circle id="quizInner" class="clickzone" cx="100" cy="70" r="38" fill="transparent" tabindex="0" role="button" aria-label="Zona interior del círculo"></circle>
+            <circle cx="100" cy="70" r="55" fill="none" stroke="var(--line)" stroke-width="1" opacity=".4"></circle>
+          </svg>
+          <div class="feedback" id="quizFeedback"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PERÍMETRO Y PI -->
+  <section class="plate" id="plate-pi">
+    <div class="eyebrow">Lámina 03 · De dónde sale π</div>
+    <h2>Hacé rodar la circunferencia</h2>
+    <p class="lead">Si desenrollás una vuelta completa sobre una regla marcada en diámetros... ¿cuánto mide?</p>
+    <div class="diagram-box">
+      <svg viewBox="0 0 620 230" id="rollSvg" role="img" aria-label="Animación de una circunferencia rodando sobre una regla"></svg>
+    </div>
+    <div class="controls">
+      <div class="slider-row">
+        <span>RADIO</span>
+        <input type="range" id="rollRadiusSlider" min="28" max="66" step="1" value="42">
+        <span class="readout" id="rollRadiusReadout">42 px</span>
+      </div>
+      <div class="toggle-row">
+        <button class="btn primary" id="rollBtn">GIRAR UNA VUELTA ▶</button>
+        <span class="explainer" id="rollReadout" style="border:none;padding:0;flex:1;min-width:200px;">Recorrido: — diámetros</span>
+      </div>
+    </div>
+
+    <div class="pi-reveal" id="piReveal">
+      <span class="pisym">π</span><strong>¡Siempre da lo mismo!</strong>
+      <p style="margin:8px 0 0;">Probá con otro radio y volvé a girar: la circunferencia <em>siempre</em> mide lo mismo que <strong>3,14159...</strong> diámetros — sin importar si el círculo es chico o gigante. Esa razón constante, circunferencia ÷ diámetro, es el número <strong class="tag-amber">π (pi)</strong>.</p>
+      <p style="margin:10px 0 0;">Por eso: <span class="mono">Circunferencia = π × diámetro = π × 2r</span>, es decir:</p>
+    </div>
+
+    <div class="formula-cards">
+      <div class="fcard">
+        <div class="lbl">Perímetro de la circunferencia</div>
+        <div class="f">C <span class="op">=</span> 2πr</div>
+        <p>o, lo mismo: C = π·d</p>
+      </div>
+      <div class="fcard">
+        <div class="lbl">π no se termina nunca</div>
+        <div class="pi-digits"><span class="whole">3,</span><span id="piDigits">14159...</span></div>
+        <button class="btn" id="piMoreBtn" style="margin-top:10px;font-size:11px;padding:7px 12px;">ver más decimales</button>
+        <p style="margin-top:8px;">π es <strong>irracional</strong>: tiene infinitas cifras decimales que no se repiten en ningún patrón. Arquímedes, en el siglo III a.C., ya lo estimaba entre 3,1408 y 3,1429 usando polígonos — hoy se calculan billones de decimales con computadoras, y nunca se termina.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÁREA -->
+  <section class="plate" id="plate-area">
+    <div class="eyebrow">Lámina 04 · De dónde sale el área</div>
+    <h2>Cortá el círculo en gajos</h2>
+    <p class="lead">Partí el círculo como una pizza y reacomodá los gajos en fila. Cuantos más gajos, más se parece a un rectángulo.</p>
+    <div class="cols">
+      <div class="col-diagram">
+        <div class="diagram-box">
+          <svg viewBox="0 0 500 380" id="sectorSvg" role="img" aria-label="Círculo cortado en sectores que se reordenan en forma de rectángulo"></svg>
+        </div>
+      </div>
+      <div class="col-text">
+        <div class="controls">
+          <div class="slider-row">
+            <span>GAJOS (n)</span>
+            <input type="range" id="sectorSlider" min="0" max="6" step="1" value="1">
+            <span class="readout" id="sectorReadout">8</span>
+          </div>
+          <div class="toggle-row">
+            <button class="btn primary" id="sectorBtn">REORDENAR ▶</button>
+          </div>
+        </div>
+        <div class="stat-strip">
+          <div class="stat"><div class="k">Base ≈</div><div class="v" id="sectorBase">πr</div></div>
+          <div class="stat"><div class="k">Altura ≈</div><div class="v" id="sectorHeight">r</div></div>
+        </div>
+        <div class="explainer" id="sectorExplainer">
+          Con pocos gajos la forma es dentada. Subí "n" y volvé a reordenar: a más gajos, los dientes se achican y la figura se acerca cada vez más a un <strong>rectángulo</strong> de base <span class="tag-amber">πr</span> (la mitad de la circunferencia) y altura <span class="tag-amber">r</span>.
+        </div>
+      </div>
+    </div>
+    <div class="formula-cards">
+      <div class="fcard" style="flex:1 1 100%;">
+        <div class="lbl">Área del rectángulo ≈ área del círculo</div>
+        <div class="f">A <span class="op">=</span> base × altura <span class="op">=</span> πr × r <span class="op">=</span> πr²</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- APLICACIONES -->
+  <section class="plate" id="plate-apps">
+    <div class="eyebrow">Lámina 05 · Calculadora y problemas</div>
+    <h2>Probá con números reales</h2>
+    <div class="cols">
+      <div class="col-diagram">
+        <div class="diagram-box">
+          <svg viewBox="0 0 300 300" id="calcSvg" role="img" aria-label="Círculo cuyo tamaño responde al radio elegido"></svg>
+        </div>
+        <div class="controls">
+          <div class="slider-row">
+            <span>RADIO</span>
+            <input type="range" id="calcSlider" min="1" max="50" step="1" value="14">
+            <span class="readout" id="calcReadout">14 m</span>
+          </div>
+        </div>
+        <div class="stat-strip">
+          <div class="stat"><div class="k">Circunferencia</div><div class="v hl" id="calcC">—</div></div>
+          <div class="stat"><div class="k">Área</div><div class="v hl" id="calcA">—</div></div>
+        </div>
+      </div>
+      <div class="col-text">
+        <div class="problem">
+          <h4>🚲 La rueda de bicicleta</h4>
+          <p>Una rueda tiene radio 35 cm. Usando la aproximación de Arquímedes, π ≈ 22/7, ¿cuántas vueltas da para recorrer 220 metros?</p>
+          <button class="btn toggle-sol" data-target="sol1" style="font-size:11px;padding:7px 12px;">ver resolución</button>
+          <div class="sol" id="sol1">
+            d = 2 × 35 cm = 70 cm<br>
+            C = π × d ≈ (22/7) × 70 cm = 220 cm = 2,20 m<br>
+            220 m ÷ 2,20 m = <strong>100 vueltas</strong>
+          </div>
+        </div>
+        <div class="problem">
+          <h4>🔵 La rotonda</h4>
+          <p>Una rotonda circular tiene 14 m de radio. Con π ≈ 22/7, ¿cuánto mide su contorno y qué superficie ocupa?</p>
+          <button class="btn toggle-sol" data-target="sol2" style="font-size:11px;padding:7px 12px;">ver resolución</button>
+          <div class="sol" id="sol2">
+            C = 2 × (22/7) × 14 m = <strong>88 m</strong> de contorno<br>
+            A = (22/7) × 14² m² = (22/7) × 196 m² = <strong>616 m²</strong> de superficie
+          </div>
+        </div>
+        <div class="problem">
+          <h4>🕳️ ¿Por qué las tapas de las alcantarillas son circulares?</h4>
+          <p>Pensalo con la definición de circunferencia: en un círculo, la distancia del centro a cualquier punto del borde es siempre la misma (el radio). ¿Qué pasaría con una tapa cuadrada o rectangular?</p>
+          <button class="btn toggle-sol" data-target="sol3" style="font-size:11px;padding:7px 12px;">ver la razón</button>
+          <div class="sol" id="sol3">
+            Una tapa cuadrada se puede inclinar y colar por su propia diagonal (que es más larga que el lado). Una tapa <strong>circular nunca puede caer por su propio agujero</strong>, porque el diámetro es igual en todas las direcciones. Es geometría trabajando como medida de seguridad.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  MAXIMÁTICA — Círculo y Circunferencia · Material de uso libre en el aula
+</footer>
+
+<script>
+(function(){
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (id) => document.getElementById(id);
+  const fmt = (n, d=2) => n.toLocaleString('es-AR', {minimumFractionDigits:d, maximumFractionDigits:d});
+  const easeInOutCubic = t => t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
+  function tween(duration, onUpdate, onDone){
+    const start = performance.now();
+    function frame(now){
+      const t = Math.min(1, (now-start)/duration);
+      onUpdate(easeInOutCubic(t), t);
+      if(t<1) requestAnimationFrame(frame); else if(onDone) onDone();
+    }
+    requestAnimationFrame(frame);
+  }
+  function svgEl(tag, attrs){
+    const e = document.createElementNS(NS, tag);
+    for(const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  /* ---------- HERO TOGGLE ---------- */
+  (function(){
+    const btnCirc = el('btnCirc'), btnCirculo = el('btnCirculo');
+    const fill = el('heroFill'), stroke = el('heroStroke');
+    const explainer = el('heroExplainer');
+    const texts = {
+      circunferencia: '<b>Circunferencia:</b> el borde curvo. Es una línea: tiene longitud, pero no tiene área. Es el conjunto de puntos que están a igual distancia (el radio) del centro.',
+      circulo: '<b>Círculo:</b> la superficie completa, borde incluido. Es una región del plano: tiene área. Es el conjunto de todos los puntos a distancia menor o igual al radio del centro.'
+    };
+    function setMode(mode){
+      if(mode === 'circunferencia'){
+        btnCirc.classList.add('active-coral'); btnCirculo.classList.remove('active-cyan');
+        tween(400, e => { fill.setAttribute('fill-opacity', 0.32*(1-e)); stroke.setAttribute('stroke-width', 5+3*e*0); });
+        stroke.setAttribute('stroke-width', 5);
+      } else {
+        btnCirculo.classList.add('active-cyan'); btnCirc.classList.remove('active-coral');
+        tween(400, e => { fill.setAttribute('fill-opacity', 0.32*e); });
+      }
+      explainer.innerHTML = texts[mode];
+    }
+    btnCirc.addEventListener('click', () => setMode('circunferencia'));
+    btnCirculo.addEventListener('click', () => setMode('circulo'));
+    // draw-on-load compass animation
+    const strokeLen = 100;
+    stroke.style.strokeDashoffset = strokeLen;
+    tween(1600, e => { stroke.setAttribute('stroke-dashoffset', strokeLen*(1-e)); });
+    let armAngle = 0;
+    function spinArm(){
+      armAngle += 0.25;
+      el('heroCompassArm').setAttribute('transform', `rotate(${armAngle} 200 200)`);
+      requestAnimationFrame(spinArm);
+    }
+    if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches) spinArm();
+  })();
+
+  /* ---------- ANATOMY DRAG ---------- */
+  (function(){
+    const svg = el('anatomySvg');
+    const fillC = el('anaFill'), strokeC = el('anaStroke');
+    const diam = el('anaDiam'), rad = el('anaRad'), handle = el('anaHandle');
+    const radLabel = el('anaRadLabel');
+    const statR = el('statR'), statD = el('statD');
+    const cx = 180, cy = 190;
+    let r = 110;
+    function render(){
+      fillC.setAttribute('r', r); strokeC.setAttribute('r', r);
+      diam.setAttribute('x1', cx-r); diam.setAttribute('x2', cx+r);
+      rad.setAttribute('x2', cx+r);
+      handle.querySelector('circle').setAttribute('cx', cx+r);
+      radLabel.setAttribute('x', cx+r/2+5);
+      statR.textContent = Math.round(r) + ' px';
+      statD.textContent = Math.round(r*2) + ' px';
+    }
+    render();
+    let dragging = false;
+    function pt(evt){
+      const rect = svg.getBoundingClientRect();
+      const vb = svg.viewBox.baseVal;
+      const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+      const x = (clientX - rect.left) / rect.width * vb.width;
+      return x;
+    }
+    function move(evt){
+      if(!dragging) return;
+      const x = pt(evt);
+      r = Math.max(45, Math.min(160, x - cx));
+      render();
+      evt.preventDefault();
+    }
+    function start(evt){ dragging = true; handle.style.cursor='grabbing'; }
+    function end(){ dragging = false; handle.style.cursor='grab'; }
+    handle.addEventListener('mousedown', start);
+    handle.addEventListener('touchstart', start, {passive:true});
+    window.addEventListener('mousemove', move);
+    window.addEventListener('touchmove', move, {passive:false});
+    window.addEventListener('mouseup', end);
+    window.addEventListener('touchend', end);
+    handle.addEventListener('keydown', (e)=>{
+      if(e.key==='ArrowRight'){ r=Math.min(160,r+5); render(); }
+      if(e.key==='ArrowLeft'){ r=Math.max(45,r-5); render(); }
+    });
+  })();
+
+  /* ---------- MINI QUIZ ---------- */
+  (function(){
+    const target = el('quizTarget'), inner = el('quizInner'), fb = el('quizFeedback');
+    let stage = 0; // 0: buscar circunferencia, 1: buscar círculo
+    function ask(){
+      if(stage===0) fb.innerHTML = '';
+    }
+    target.addEventListener('click', () => {
+      if(stage===0){ fb.textContent = '✓ ¡Correcto! Eso es la circunferencia: el borde.'; fb.className='feedback ok'; stage=1;
+        setTimeout(()=>{ fb.textContent = 'Ahora hacé clic en el interior (el CÍRCULO, sin tocar el borde).'; fb.className='feedback'; },1100);
+      } else if(stage===1){ fb.textContent = 'Ese es el borde otra vez — probá más al centro, en la superficie.'; fb.className='feedback no'; }
+    });
+    inner.addEventListener('click', () => {
+      if(stage===1){ fb.textContent = '✓ ¡Exacto! Eso es el círculo: la superficie interior.'; fb.className='feedback ok'; stage=2; }
+      else if(stage===0){ fb.textContent = 'Ese es el interior — buscá primero el BORDE (la línea).'; fb.className='feedback no'; }
+      else { fb.textContent = '¡Ya distinguiste las dos! 🎉'; fb.className='feedback ok'; }
+    });
+  })();
+
+  /* ---------- ROLL / PI DEMO ---------- */
+  (function(){
+    const svg = el('rollSvg');
+    const slider = el('rollRadiusSlider'), radiusReadout = el('rollRadiusReadout');
+    const btn = el('rollBtn'), readout = el('rollReadout');
+    const piReveal = el('piReveal');
+    const startCx = 70, baseY = 165;
+    let r = +slider.value;
+    let animating = false;
+
+    function build(){
+      svg.innerHTML = '';
+      const d = 2*r;
+      // baseline
+      svg.appendChild(svgEl('line', {x1:20,y1:baseY+ r, x2:600, y2:baseY+r, stroke:'var(--line)', 'stroke-width':2}));
+      // ticks every diameter, up to 4
+      for(let k=0;k<=4;k++){
+        const x = startCx + k*d;
+        if(x>595) break;
+        svg.appendChild(svgEl('line', {x1:x,y1:baseY+r-8,x2:x,y2:baseY+r+8,stroke:'var(--ink-faint)','stroke-width':1.5}));
+        const t = svgEl('text', {x:x,y:baseY+r+24,'text-anchor':'middle',fill:'var(--ink-faint)','font-family':'var(--mono)','font-size':11});
+        t.textContent = k + 'd';
+        svg.appendChild(t);
+      }
+      // trace line (grows during animation)
+      const trace = svgEl('line', {id:'traceLine', x1:startCx,y1:baseY+2*r+14,x2:startCx,y2:baseY+2*r+14,stroke:'var(--coral)','stroke-width':3,'stroke-linecap':'round'});
+      svg.appendChild(trace);
+      // circle group
+      const g = svgEl('g', {id:'rollGroup'});
+      const circ = svgEl('circle', {cx:startCx,cy:baseY,r:r,fill:'none',stroke:'var(--cyan)','stroke-width':3});
+      const marker = svgEl('line', {id:'rollMarker',x1:startCx,y1:baseY,x2:startCx,y2:baseY-r,stroke:'var(--amber)','stroke-width':2.5});
+      const dot = svgEl('circle', {cx:startCx,cy:baseY-r,r:4,fill:'var(--amber)'});
+      const center = svgEl('circle', {cx:startCx,cy:baseY,r:2.5,fill:'var(--ink)'});
+      g.appendChild(circ); g.appendChild(marker); g.appendChild(center);
+      svg.appendChild(g);
+      // flag placeholder
+      svg.appendChild(svgEl('g', {id:'flagGroup'}));
+      readout.textContent = 'Recorrido: — diámetros';
+      piReveal.classList.remove('show');
+    }
+    build();
+
+    slider.addEventListener('input', () => {
+      r = +slider.value;
+      radiusReadout.textContent = r + ' px';
+      if(!animating) build();
+    });
+
+    btn.addEventListener('click', () => {
+      if(animating) return;
+      animating = true; btn.disabled = true;
+      const d = 2*r;
+      const total = 2*Math.PI*r;
+      const g = el('rollGroup');
+      const marker = el('rollMarker');
+      const trace = el('traceLine');
+      tween(1600, (e) => {
+        const dist = total*e;
+        g.setAttribute('transform', `translate(${dist},0)`);
+        const angleDeg = (dist/r) * (180/Math.PI);
+        marker.setAttribute('transform', `rotate(${angleDeg} ${startCx} ${baseY})`);
+        trace.setAttribute('x2', startCx+dist);
+        readout.textContent = 'Recorrido: ' + fmt(dist/d,5) + ' diámetros';
+      }, () => {
+        // flag
+        const flagX = startCx+total;
+        const fg = el('flagGroup');
+        fg.innerHTML = '';
+        fg.appendChild(svgEl('line', {x1:flagX,y1:baseY+r,x2:flagX,y2:baseY+r-26,stroke:'var(--amber)','stroke-width':2}));
+        const tri = svgEl('path', {d:`M ${flagX},${baseY+r-26} l 16,5 l -16,5 Z`, fill:'var(--amber)'});
+        fg.appendChild(tri);
+        readout.innerHTML = 'Recorrido: <b style="color:var(--amber)">3,14159...</b> diámetros';
+        piReveal.classList.add('show');
+        animating = false; btn.disabled = false;
+      });
+    });
+  })();
+
+  /* ---------- SECTOR / AREA DEMO ---------- */
+  (function(){
+    const svg = el('sectorSvg');
+    const slider = el('sectorSlider'), readout = el('sectorReadout');
+    const btn = el('sectorBtn');
+    const nValues = [8,12,16,24,32,48,64];
+    const r = 88;
+    const cx = 250, cyCircle = 140;
+    const baseline = 320;
+    let n = nValues[slider.value];
+    let arranged = false;
+    let paths = [];
+
+    function localPathD(thetaDeg){
+      const half = thetaDeg/2 * Math.PI/180;
+      const p1x = r*Math.sin(-half), p1y = -r*Math.cos(-half);
+      const p2x = r*Math.sin(half), p2y = -r*Math.cos(half);
+      const large = thetaDeg>180 ? 1 : 0;
+      return `M 0,0 L ${p1x.toFixed(2)},${p1y.toFixed(2)} A ${r},${r} 0 ${large} 1 ${p2x.toFixed(2)},${p2y.toFixed(2)} Z`;
+    }
+
+    function build(){
+      svg.innerHTML = '';
+      paths = [];
+      const thetaDeg = 360/n;
+      const dLocal = localPathD(thetaDeg);
+      for(let i=0;i<n;i++){
+        const p = svgEl('path', {d:dLocal, fill: i%2===0 ? 'var(--cyan)' : 'var(--coral)', 'fill-opacity':'0.55', stroke:'var(--bg-plate)','stroke-width':1});
+        svg.appendChild(p);
+        paths.push(p);
+      }
+      layoutCircle(1);
+      // guide baseline for rectangle mode (hidden until arranged)
+    }
+
+    function layoutCircle(){
+      const thetaDeg = 360/n;
+      paths.forEach((p,i) => {
+        const rotation = (i+0.5)*thetaDeg;
+        p.setAttribute('transform', `translate(${cx},${cyCircle}) rotate(${rotation})`);
+      });
+    }
+    function layoutRect(){
+      const theta = 2*Math.PI/n;
+      const step = (r*Math.PI)/n; // half arc length
+      const totalWidth = n*step;
+      const startX = cx - totalWidth/2;
+      paths.forEach((p,i) => {
+        const x = startX + i*step + step/2;
+        if(i%2===0){
+          p.setAttribute('transform', `translate(${x},${baseline}) rotate(0)`);
+        } else {
+          p.setAttribute('transform', `translate(${x},${baseline-r}) rotate(180)`);
+        }
+      });
+    }
+
+    function animateTo(fn){
+      // capture current transforms, target transforms, then tween by re-setting
+      const current = paths.map(p => p.getAttribute('transform'));
+      // Build target by calling fn (which sets attributes), then read them, then restore & animate
+      fn();
+      const target = paths.map(p => p.getAttribute('transform'));
+      // restore
+      paths.forEach((p,i) => p.setAttribute('transform', current[i]));
+      // parse translate/rotate helper
+      function parse(t){
+        const tm = /translate\(([-.\d]+),\s*([-.\d]+)\)/.exec(t);
+        const rm = /rotate\(([-.\d]+)\)/.exec(t);
+        return {x:tm?+tm[1]:0, y:tm?+tm[2]:0, rot:rm?+rm[1]:0};
+      }
+      const from = current.map(parse), to = target.map(parse);
+      tween(1100, e => {
+        paths.forEach((p,i) => {
+          const x = from[i].x + (to[i].x-from[i].x)*e;
+          const y = from[i].y + (to[i].y-from[i].y)*e;
+          let rot = from[i].rot + (to[i].rot-from[i].rot)*e;
+          p.setAttribute('transform', `translate(${x},${y}) rotate(${rot})`);
+        });
+      });
+    }
+
+    build();
+
+    slider.addEventListener('input', () => {
+      n = nValues[slider.value];
+      readout.textContent = n;
+      build();
+      if(arranged){ arranged=false; btn.textContent='REORDENAR ▶'; }
+    });
+
+    btn.addEventListener('click', () => {
+      if(!arranged){
+        animateTo(layoutRect);
+        btn.textContent = 'VOLVER AL CÍRCULO ▶';
+        arranged = true;
+      } else {
+        animateTo(layoutCircle);
+        btn.textContent = 'REORDENAR ▶';
+        arranged = false;
+      }
+    });
+  })();
+
+  /* ---------- CALCULATOR ---------- */
+  (function(){
+    const svg = el('calcSvg');
+    const slider = el('calcSlider'), readout = el('calcReadout');
+    const statC = el('calcC'), statA = el('calcA');
+    const PI = Math.PI;
+    function render(){
+      const rReal = +slider.value;
+      readout.textContent = rReal + ' m';
+      const rPx = 20 + (rReal/50)*110;
+      svg.innerHTML = '';
+      svg.appendChild(svgEl('circle', {cx:150,cy:150,r:rPx, fill:'var(--cyan)','fill-opacity':.18, stroke:'var(--coral)','stroke-width':3}));
+      svg.appendChild(svgEl('circle', {cx:150,cy:150,r:2.5, fill:'var(--ink)'}));
+      svg.appendChild(svgEl('line', {x1:150,y1:150,x2:150+rPx,y2:150,stroke:'var(--amber)','stroke-width':2}));
+      const C = 2*PI*rReal, A = PI*rReal*rReal;
+      statC.textContent = fmt(C,2) + ' m';
+      statA.textContent = fmt(A,2) + ' m²';
+    }
+    slider.addEventListener('input', render);
+    render();
+  })();
+
+  /* ---------- PI DIGITS REVEAL ---------- */
+  (function(){
+    const full = '14159265358979323846264338327950288419716939937510';
+    const short = '14159...';
+    const span = el('piDigits');
+    const btn = el('piMoreBtn');
+    let expanded = false;
+    btn.addEventListener('click', () => {
+      expanded = !expanded;
+      span.textContent = expanded ? full + '...' : short;
+      btn.textContent = expanded ? 'ver menos' : 'ver más decimales';
+    });
+  })();
+
+  /* ---------- SOLUTION TOGGLES ---------- */
+  document.querySelectorAll('.toggle-sol').forEach(b => {
+    b.addEventListener('click', () => {
+      const t = document.getElementById(b.dataset.target);
+      t.classList.toggle('show');
+      b.textContent = t.classList.contains('show') ? 'ocultar resolución' : (b.dataset.target==='sol3' ? 'ver la razón' : 'ver resolución');
+    });
+  });
+})();
+</script>
+</body>
+</html>
